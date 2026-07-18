@@ -1,83 +1,49 @@
 # ResumeCheck
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/majaber1/resume-check&env=ANTHROPIC_API_KEY&envDescription=API%20key%20required%20for%20Claude-powered%20analysis&envLink=https://console.anthropic.com)
+Production-oriented AI resume analysis built with Next.js, Anthropic, Supabase, and Stripe.
 
-Instant, AI-powered resume feedback. Paste your resume text and optionally a target job description to get:
+## Features
 
-- An overall quality score and ATS-compatibility score
-- Strengths
-- Prioritized issues with concrete suggestions
-- Missing keywords vs. the target job description
-- ATS-specific formatting notes
+- Paste resume text or upload PDF/DOCX files (5 MB maximum)
+- English and Arabic analysis and RTL interface
+- ATS score, strengths, issues, keyword gaps, and prioritized suggestions
+- Email/password accounts with Supabase Auth
+- Secure saved-analysis dashboard using Postgres row-level security
+- Stripe Checkout subscriptions and signed webhook handling
+- Client-side PDF report export
+- Privacy, Terms, and Contact pages
 
-Built with Next.js 14 (App Router), TypeScript, Tailwind CSS, and the Anthropic API. Includes a lightweight freemium gate and a pricing section.
+## Local setup
 
-## Getting started
-
-### 1. Install dependencies
+1. Copy `.env.example` to `.env.local` and fill the required values.
+2. Run `supabase/schema.sql` in the Supabase SQL editor.
+3. Create a recurring Stripe price and set `STRIPE_PRO_PRICE_ID`.
+4. Register `/api/stripe/webhook` in Stripe and subscribe to `checkout.session.completed` and `customer.subscription.deleted`.
+5. Install and start:
 
 ```bash
 npm install
-```
-
-### 2. Set up your API key
-
-```bash
-cp .env.example .env.local
-```
-
-Edit `.env.local` and add your Anthropic API key:
-
-```
-ANTHROPIC_API_KEY=sk-ant-your-key-here
-```
-
-Get a key at [console.anthropic.com](https://console.anthropic.com/).
-
-### 3. Run the dev server
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+## Vercel environment variables
 
-## Deploying to Vercel
+- `ANTHROPIC_API_KEY`
+- `ANTHROPIC_MODEL` (optional)
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (server-only)
+- `STRIPE_SECRET_KEY` (server-only)
+- `STRIPE_WEBHOOK_SECRET` (server-only)
+- `STRIPE_PRO_PRICE_ID`
 
-1. Push this project to GitHub.
-2. Click the **Deploy with Vercel** badge above.
-3. Set the `ANTHROPIC_API_KEY` environment variable in the Vercel dashboard.
-4. `vercel.json` is already configured for Next.js.
+Never expose service-role, Anthropic, or Stripe secret keys through `NEXT_PUBLIC_*` variables.
 
-## Monetization tips
+## Validation
 
-The freemium gate (`lib/usage.ts`) uses localStorage - a soft gate suitable for nudging users to upgrade. To harden it:
-
-1. **IP rate limiting** - track requests in Redis/Upstash keyed by IP + month
-2. **Add auth** - use Clerk or Auth.js to gate per user account
-3. **Stripe billing** - wire the Pro upgrade button in PricingSection.tsx to Stripe Checkout
-
-The Pro "Upgrade" button currently shows an alert() placeholder ready to connect to Stripe.
-
-## Project structure
-
+```bash
+npm run build
 ```
-resume-check/
-├── app/
-│   ├── api/analyze/route.ts   # Claude API integration
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx               # Main UI with freemium gate
-├── components/
-│   ├── ResultCard.tsx         # Analysis results display
-│   └── PricingSection.tsx     # Free / Pro pricing
-├── lib/
-│   └── usage.ts               # localStorage usage tracking
-├── .env.example
-├── .gitignore
-├── next.config.js
-├── package.json
-├── tailwind.config.ts
-├── tsconfig.json
-└── vercel.json
-```
+
+The legal pages are production-ready templates, but should be reviewed by qualified counsel for the jurisdictions in which the service operates. Replace the support email before launch if `support@resume-check.app` is not configured.

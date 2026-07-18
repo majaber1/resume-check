@@ -1,4 +1,4 @@
-import type { AnalysisResult } from "@/app/api/analyze/route";
+import type { AnalysisResult } from "@/lib/analysis";
 
 type IssueSeverity = "high" | "medium" | "low";
 
@@ -53,18 +53,19 @@ function ScoreRing({ score, label }: { score: number; label: string }) {
   );
 }
 
-export default function ResultCard({ result }: { result: AnalysisResult }) {
+export default function ResultCard({ result, locale = "en" }: { result: AnalysisResult; locale?: "en" | "ar" }) {
+  const ar = locale === "ar";
   const issues = (result.issues || []) as IssueItem[];
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start">
           <div className="flex gap-6">
-            <ScoreRing score={result.overallScore} label="Overall" />
-            <ScoreRing score={result.atsCompatibility?.score ?? 0} label="ATS" />
+            <ScoreRing score={result.overallScore} label={ar ? "الإجمالي" : "Overall"} />
+            <ScoreRing score={result.atsCompatibility?.score ?? 0} label={ar ? "ATS" : "ATS"} />
           </div>
           <div className="flex-1">
-            <h2 className="text-base font-semibold text-slate-900">Summary</h2>
+            <h2 className="text-base font-semibold text-slate-900">{ar ? "الملخص" : "Summary"}</h2>
             <p className="mt-1 text-sm leading-relaxed text-slate-600">{result.summary || "No summary."}</p>
           </div>
         </div>
@@ -72,7 +73,7 @@ export default function ResultCard({ result }: { result: AnalysisResult }) {
 
       {(result.strengths || []).length > 0 && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">Strengths</h2>
+          <h2 className="text-base font-semibold text-slate-900">{ar ? "نقاط القوة" : "Strengths"}</h2>
           <ul className="mt-3 space-y-2">
             {result.strengths.map((s: string, i: number) => (
               <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
@@ -85,7 +86,7 @@ export default function ResultCard({ result }: { result: AnalysisResult }) {
 
       {issues.length > 0 && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">Issues &amp; Suggestions</h2>
+          <h2 className="text-base font-semibold text-slate-900">{ar ? "الملاحظات والاقتراحات" : "Issues & Suggestions"}</h2>
           <div className="mt-3 space-y-3">
             {issues.map((issue, i) => (
               <div key={i} className={`rounded-xl border p-4 ${severityStyles(issue.severity)}`}>
@@ -94,7 +95,7 @@ export default function ResultCard({ result }: { result: AnalysisResult }) {
                   <span className="rounded-full bg-white/60 px-2 py-0.5 text-[10px] font-bold uppercase">{issue.severity}</span>
                 </div>
                 <p className="mt-2 text-sm">{issue.description}</p>
-                <p className="mt-2 text-sm font-medium">Suggestion: {issue.suggestion}</p>
+                <p className="mt-2 text-sm font-medium">{ar ? "الاقتراح: " : "Suggestion: "}{issue.suggestion}</p>
               </div>
             ))}
           </div>
@@ -103,7 +104,7 @@ export default function ResultCard({ result }: { result: AnalysisResult }) {
 
       {(result.missingKeywords || []).length > 0 && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">Missing Keywords</h2>
+          <h2 className="text-base font-semibold text-slate-900">{ar ? "الكلمات المفتاحية الناقصة" : "Missing Keywords"}</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {result.missingKeywords.map((kw: string, i: number) => (
               <span key={i} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 border border-slate-200">{kw}</span>
@@ -114,7 +115,7 @@ export default function ResultCard({ result }: { result: AnalysisResult }) {
 
       {(result.atsCompatibility?.notes || []).length > 0 && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">ATS Notes</h2>
+          <h2 className="text-base font-semibold text-slate-900">{ar ? "ملاحظات ATS" : "ATS Notes"}</h2>
           <ul className="mt-3 space-y-2">
             {result.atsCompatibility.notes.map((note: string, i: number) => (
               <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
