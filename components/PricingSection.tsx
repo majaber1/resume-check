@@ -1,79 +1,27 @@
+const plans = [
+  { name: "Free", price: "$0", note: "Try the essentials", features: ["2 analyses every month", "ATS compatibility score", "Keyword gap overview"], cta: "Start for free" },
+  { name: "Pro", price: "$9", note: "For active job seekers", features: ["Unlimited resume analyses", "Full job-specific report", "Priority recommendations", "Downloadable reports"], cta: "Upgrade to Pro", popular: true },
+];
+
 export default function PricingSection() {
   return (
-    <section id="pricing" className="mt-20 border-t border-slate-200 pt-16">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-          Simple, transparent pricing
-        </h2>
-        <p className="mt-2 text-slate-500">
-          Start free. Upgrade any time for unlimited feedback.
-        </p>
-      </div>
-
-      <div className="mx-auto mt-10 grid max-w-2xl gap-6 sm:grid-cols-2">
-        {/* Free tier */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Free
-          </h3>
-          <p className="mt-2 text-3xl font-bold text-slate-900">
-            $0
-            <span className="text-base font-normal text-slate-400">/month</span>
-          </p>
-          <ul className="mt-6 space-y-3 text-sm text-slate-600">
-            <li className="flex items-center gap-2">
-              <span className="text-emerald-500">checkmark</span>
-              2 resume analyses / month
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-emerald-500">checkmark</span>
-              ATS compatibility score
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-emerald-500">checkmark</span>
-              Job description keyword match
-            </li>
-          </ul>
-          <button
-            disabled
-            className="mt-8 w-full cursor-default rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-400"
-          >
-            Current plan
-          </button>
+    <section id="pricing" className="bg-slate-950 py-24 text-white">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="text-sm font-semibold text-indigo-300">SIMPLE PRICING</span>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Start free. Upgrade when it matters.</h2>
+          <p className="mt-4 text-slate-400">Clear feedback, no hidden fees, cancel anytime.</p>
         </div>
-
-        {/* Pro tier */}
-        <div className="relative rounded-2xl border-2 border-brand-600 bg-white p-6 shadow-md">
-          <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white">
-            Most popular
-          </span>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-600">
-            Pro
-          </h3>
-          <p className="mt-2 text-3xl font-bold text-slate-900">
-            $9
-            <span className="text-base font-normal text-slate-400">/month</span>
-          </p>
-          <ul className="mt-6 space-y-3 text-sm text-slate-600">
-            <li className="flex items-center gap-2">
-              <span className="text-emerald-500">checkmark</span>
-              Unlimited resume analyses
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-emerald-500">checkmark</span>
-              Everything in Free
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="text-emerald-500">checkmark</span>
-              Priority support
-            </li>
-          </ul>
-          <button
-            onClick={() => alert('Wire this up to your Stripe Checkout session — see README.md for Monetization tips.')}
-            className="mt-8 w-full rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
-          >
-            Upgrade to Pro
-          </button>
+        <div className="mx-auto mt-12 grid max-w-3xl gap-5 md:grid-cols-2">
+          {plans.map((plan) => (
+            <article key={plan.name} className={`relative rounded-3xl border p-7 ${plan.popular ? "border-indigo-400 bg-white text-slate-950 shadow-2xl" : "border-slate-800 bg-slate-900"}`}>
+              {plan.popular && <span className="absolute right-6 top-6 rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700">Most popular</span>}
+              <p className="text-sm font-bold">{plan.name}</p><p className="mt-4 text-4xl font-bold">{plan.price}<span className="text-base font-medium opacity-50">/month</span></p>
+              <p className="mt-2 text-sm opacity-60">{plan.note}</p>
+              <ul className="mt-7 space-y-3 text-sm">{plan.features.map((x) => <li key={x} className="flex gap-3"><span className="font-bold text-emerald-500">✓</span>{x}</li>)}</ul>
+              <button onClick={() => document.getElementById("analyzer")?.scrollIntoView({ behavior: "smooth" })} className={`mt-8 w-full rounded-xl px-4 py-3 text-sm font-bold transition ${plan.popular ? "bg-indigo-600 text-white hover:bg-indigo-700" : "bg-white text-slate-950 hover:bg-slate-100"}`}>{plan.cta}</button>
+            </article>
+          ))}
         </div>
       </div>
     </section>
