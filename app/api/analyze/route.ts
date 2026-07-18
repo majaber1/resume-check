@@ -1,24 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import type { AnalysisResult } from "@/lib/analysis";
+
+export type { AnalysisResult } from "@/lib/analysis";
 
 export const runtime = "nodejs";
-
-export interface AnalysisResult {
-  overallScore: number;
-  summary: string;
-  strengths: string[];
-  issues: {
-    category: string;
-    severity: "high" | "medium" | "low";
-    description: string;
-    suggestion: string;
-  }[];
-  missingKeywords: string[];
-  atsCompatibility: {
-    score: number;
-    notes: string[];
-  };
-}
 
 function extractJson(text: string): string {
   const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -32,14 +18,14 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "Missing ANTHROPIC_API_KEY" }, { status: 500 });
 
-  const { resumeText, jobDescription } = await req.json();
+  const { resumeText, jobDescription, locale = "en" } = await req.json();
   if (!resumeText || resumeText.trim().length < 50)
     return NextResponse.json({ error: "Resume text too short" }, { status: 400 });
 
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-haiku-4-5";
 
-  const system = `You are an expert resume reviewer. Analyze the resume and return ONLY a JSON object with this exact structure:
+  const system = `You are an expert resume reviewer. Write every human-readable value in ${locale === "ar" ? "professional Arabic" : "professional English"}. Analyze the resume and return ONLY a JSON object with this exact structure:
 {"overallScore":0-100,"summary":"string","strengths":["..."],"issues":[{"category":"","severity":"high|medium|low","description":"","suggestion":""}],"missingKeywords":["..."],"atsCompatibility":{"score":0-100,"notes":["..."]}}`;
 
   const userContent = jobDescription
